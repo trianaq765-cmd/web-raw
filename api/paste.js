@@ -1,8 +1,18 @@
-const { getPastesCollection } = require('../lib/mongodb');
-const { nanoid } = require('nanoid');
+const { MongoClient } = require('mongodb');
+
+const uri = process.env.MONGODB_URI;
+
+function generateId() {
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let id = '';
+  for (let i = 0; i < 8; i++) {
+    id += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return id;
+}
 
 module.exports = async function handler(req, res) {
-  // Set CORS headers
+  // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -11,47 +21,59 @@ module.exports = async function handler(req, res) {
     return res.status(200).end();
   }
 
-  // POST - Buat paste baru
-  if (req.method === 'POST') {
-    try {
-      const { content, title } = req.body;
-
-      if (!content || content.trim() === '') {
-        return res.status(400).json({ 
-          success: false, 
-          error: 'Content tidak boleh kosong!' 
-        });
-      }
-
-      const id = nanoid(8); // ID 8 karakter
-      const paste = {
-        id: id,
-        title: title || 'Untitled',
-        content: content,
-        views: 0,
-        createdAt: new Date()
-      };
-
-      const collection = await getPastesCollection();
-      await collection.insertOne(paste);
-
-      return res.status(201).json({
-        success: true,
-        data: {
-          id: id,
-          url: `/view/${id}`,
-          rawUrl: `/raw/${id}`
-        }
-      });
-
-    } catch (error) {
-      console.error('Error:', error);
-      return res.status(500).json({ 
-        success: false, 
-        error: 'Gagal menyimpan paste' 
-      });
-    }
+  if (req.method !== 'POST') {
+    return res.status(405).json({ success: false, error: 'Method not allowed' });
   }
 
-  return res.status(405).json({ error: 'Method tidak diizinkan' });
+  try {
+    const { content, title } = req.body;
+
+    if (!content || content.trim() === '') {
+      return res.status(400).json({ success: false, error: 'Content kosong!' });
+    }
+
+    // Cek ukuran (max 2MB)
+    const sizeInBytes = Buffer.byteLength(content, 'utf8');
+    const sizeInMB = sizeInBytes / (1024 * 1024);
+    
+    if (sizeInMB > 2) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'File terlalu besar! Maksimal 2MB.' 
+      });
+    }
+
+    const client = new MongoClient(uri);
+    await client.connect();
+    
+    const db = client.db('pastedb');
+    const collection = db.collection('pastes');
+
+    const id = generateId();
+    const paste = {
+      id: id,
+      title: title || 'Untitled',
+      content: content,
+      size: sizeInBytes,
+      views: 0,
+      createdAt: new Date()
+    };
+
+    await collection.insertOne(paste);
+    await client.close();
+
+    return res.status(201).json({
+      success: true,
+      data: {
+        id: id,
+        url: '/view/' + id,
+        rawUrl: '/raw/' + id,
+        size: sizeInBytes
+      }
+    });
+
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
 };
