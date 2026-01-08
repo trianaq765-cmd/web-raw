@@ -3,283 +3,144 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>View Paste - Roblox Paste</title>
+  <title>View Paste</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
       min-height: 100vh;
       color: #fff;
       padding: 20px;
     }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
+    .container { max-width: 800px; margin: 0 auto; }
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 20px 0;
-      border-bottom: 1px solid #333;
       margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #333;
     }
-
-    header h1 {
-      font-size: 1.5rem;
-      color: #00d9ff;
-    }
-
-    header a {
-      color: #00d9ff;
-      text-decoration: none;
-    }
-
-    .paste-info {
+    header h1 { color: #00d9ff; font-size: 1.5rem; }
+    header a { color: #00d9ff; text-decoration: none; }
+    .info {
       background: #0f0f23;
       padding: 20px;
       border-radius: 10px;
       margin-bottom: 20px;
       border: 1px solid #333;
     }
-
-    .paste-info h2 {
-      color: #fff;
-      margin-bottom: 10px;
-    }
-
-    .paste-info .meta {
-      color: #888;
-      font-size: 0.9rem;
-    }
-
-    .paste-info .meta span {
-      margin-right: 20px;
-    }
-
-    .actions {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
+    .info h2 { margin-bottom: 10px; }
+    .info .meta { color: #888; font-size: 0.9rem; }
+    .actions { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
     .btn {
       padding: 10px 20px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      font-size: 0.9rem;
-      transition: all 0.3s ease;
+      font-size: 14px;
     }
-
-    .btn-primary {
-      background: #00d9ff;
-      color: #000;
-    }
-
-    .btn-secondary {
-      background: #333;
-      color: #fff;
-    }
-
-    .btn:hover {
-      opacity: 0.8;
-    }
-
-    .code-container {
+    .btn-primary { background: #00d9ff; color: #000; }
+    .btn-secondary { background: #333; color: #fff; text-decoration: none; }
+    .code-box {
       background: #0a0a15;
       border-radius: 10px;
       border: 1px solid #333;
       overflow: hidden;
     }
-
     .code-header {
       background: #1a1a2e;
       padding: 10px 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       border-bottom: 1px solid #333;
-    }
-
-    .code-header span {
       color: #888;
     }
-
     .code-content {
       padding: 20px;
       overflow-x: auto;
     }
-
     .code-content pre {
-      margin: 0;
       color: #0f0;
-      font-family: 'Consolas', 'Monaco', monospace;
+      font-family: 'Consolas', monospace;
       font-size: 14px;
-      line-height: 1.6;
       white-space: pre-wrap;
       word-wrap: break-word;
+      margin: 0;
     }
-
-    .loading {
-      text-align: center;
-      padding: 50px;
-      color: #888;
-    }
-
-    .error-box {
-      background: #2a0a0a;
-      border: 1px solid #ff4444;
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-      color: #ff4444;
-    }
-
-    .raw-url-box {
-      background: #1a1a2e;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      border: 1px solid #333;
-    }
-
-    .raw-url-box label {
-      color: #888;
-      font-size: 0.9rem;
-      display: block;
-      margin-bottom: 8px;
-    }
-
-    .raw-url-box .url-input {
-      display: flex;
-      gap: 10px;
-    }
-
-    .raw-url-box input {
-      flex: 1;
-      padding: 10px;
-      background: #0f0f23;
-      border: 1px solid #333;
-      border-radius: 5px;
-      color: #00d9ff;
-      font-family: monospace;
-      font-size: 13px;
-    }
+    .loading { text-align: center; padding: 50px; color: #888; }
+    .error { text-align: center; padding: 50px; color: #ff4444; }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
       <h1>🎮 Roblox Paste</h1>
-      <a href="/">+ Buat Paste Baru</a>
+      <a href="/">+ Buat Baru</a>
     </header>
-
     <div id="content">
-      <div class="loading">⏳ Memuat paste...</div>
+      <div class="loading">⏳ Memuat...</div>
     </div>
   </div>
 
   <script>
     async function loadPaste() {
-      const path = window.location.pathname;
-      const id = path.split('/').pop();
-      const contentDiv = document.getElementById('content');
+      const id = window.location.pathname.split('/').pop();
+      const content = document.getElementById('content');
 
       try {
-        const response = await fetch(`/api/${id}`);
-        const data = await response.json();
+        const res = await fetch('/api/get?id=' + id);
+        const data = await res.json();
 
         if (!data.success) {
-          throw new Error(data.error);
+          content.innerHTML = '<div class="error">❌ ' + data.error + '</div>';
+          return;
         }
 
-        const paste = data.data;
-        const rawUrl = `${window.location.origin}/raw/${paste.id}`;
-        const createdAt = new Date(paste.createdAt).toLocaleString('id-ID');
+        const p = data.data;
+        const rawUrl = window.location.origin + '/raw/' + p.id;
 
-        contentDiv.innerHTML = `
-          <div class="paste-info">
-            <h2>${escapeHtml(paste.title)}</h2>
-            <div class="meta">
-              <span>👁️ ${paste.views} views</span>
-              <span>📅 ${createdAt}</span>
-            </div>
+        content.innerHTML = `
+          <div class="info">
+            <h2>${escapeHtml(p.title)}</h2>
+            <div class="meta">👁️ ${p.views} views</div>
           </div>
-
-          <div class="raw-url-box">
-            <label>📄 Raw URL (untuk Roblox loadstring):</label>
-            <div class="url-input">
-              <input type="text" value="${rawUrl}" id="rawUrl" readonly>
-              <button class="btn btn-secondary" onclick="copyRawUrl()">Copy</button>
-            </div>
-          </div>
-
           <div class="actions">
             <button class="btn btn-primary" onclick="copyScript()">📋 Copy Script</button>
             <button class="btn btn-secondary" onclick="copyLoadstring()">📋 Copy Loadstring</button>
-            <a href="/raw/${paste.id}" target="_blank" class="btn btn-secondary">📄 View Raw</a>
+            <a href="/raw/${p.id}" target="_blank" class="btn btn-secondary">📄 Raw</a>
           </div>
-
-          <div class="code-container">
-            <div class="code-header">
-              <span>Lua Script</span>
-              <span>${paste.content.split('\\n').length} lines</span>
-            </div>
+          <div class="code-box">
+            <div class="code-header">Lua Script</div>
             <div class="code-content">
-              <pre id="codeContent">${escapeHtml(paste.content)}</pre>
+              <pre id="code">${escapeHtml(p.content)}</pre>
             </div>
           </div>
         `;
 
-        // Simpan content untuk copy
-        window.pasteContent = paste.content;
+        window.scriptContent = p.content;
         window.rawUrl = rawUrl;
 
-      } catch (error) {
-        contentDiv.innerHTML = `
-          <div class="error-box">
-            <h2>❌ Paste Tidak Ditemukan</h2>
-            <p>${error.message}</p>
-            <br>
-            <a href="/" class="btn btn-primary">Kembali ke Home</a>
-          </div>
-        `;
+      } catch (err) {
+        content.innerHTML = '<div class="error">❌ Error: ' + err.message + '</div>';
       }
     }
 
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-
-    function copyRawUrl() {
-      navigator.clipboard.writeText(window.rawUrl);
-      alert('Raw URL berhasil dicopy!');
+    function escapeHtml(t) {
+      const d = document.createElement('div');
+      d.textContent = t;
+      return d.innerHTML;
     }
 
     function copyScript() {
-      navigator.clipboard.writeText(window.pasteContent);
-      alert('Script berhasil dicopy!');
+      navigator.clipboard.writeText(window.scriptContent);
+      alert('Script copied!');
     }
 
     function copyLoadstring() {
-      const loadstring = `loadstring(game:HttpGet("${window.rawUrl}"))()`;
-      navigator.clipboard.writeText(loadstring);
-      alert('Loadstring berhasil dicopy!');
+      navigator.clipboard.writeText('loadstring(game:HttpGet("' + window.rawUrl + '"))()');
+      alert('Loadstring copied!');
     }
 
-    // Load paste saat halaman dibuka
     loadPaste();
   </script>
 </body>
