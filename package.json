@@ -1,7 +1,14 @@
 {
-  "name": "roblox-paste",
-  "version": "1.0.0",
-  "dependencies": {
-    "mongodb": "^6.3.0"
-  }
+  "version": 2,
+  "functions": {
+    "api/**/*.js": {
+      "maxDuration": 30
+    }
+  },
+  "routes": [
+    { "src": "/raw/(.*)", "dest": "/api/raw?id=$1" },
+    { "src": "/view/(.*)", "dest": "/public/view.html" },
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/(.*)", "dest": "/public/$1" }
+  ]
 }
