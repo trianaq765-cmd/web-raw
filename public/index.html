@@ -5,232 +5,127 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Roblox Paste</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
       min-height: 100vh;
       color: #fff;
       padding: 20px;
     }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    header {
-      text-align: center;
-      padding: 30px 0;
-    }
-
-    header h1 {
-      font-size: 2.5rem;
-      color: #00d9ff;
-      margin-bottom: 10px;
-    }
-
-    header p {
-      color: #888;
-    }
-
-    .paste-form {
+    .container { max-width: 800px; margin: 0 auto; }
+    h1 { text-align: center; color: #00d9ff; margin-bottom: 10px; }
+    .subtitle { text-align: center; color: #888; margin-bottom: 30px; }
+    .form-box {
       background: #0f0f23;
-      border-radius: 15px;
       padding: 25px;
+      border-radius: 15px;
       border: 1px solid #333;
     }
-
-    .form-group {
+    label { display: block; color: #00d9ff; margin-bottom: 8px; }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      background: #1a1a2e;
+      color: #fff;
+      font-size: 14px;
       margin-bottom: 20px;
     }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      color: #00d9ff;
-      font-weight: 500;
-    }
-
-    .form-group input[type="text"] {
-      width: 100%;
-      padding: 12px 15px;
-      border: 1px solid #333;
-      border-radius: 8px;
-      background: #1a1a2e;
-      color: #fff;
-      font-size: 1rem;
-    }
-
-    .form-group textarea {
-      width: 100%;
-      height: 350px;
-      padding: 15px;
-      border: 1px solid #333;
-      border-radius: 8px;
-      background: #1a1a2e;
+    textarea {
+      height: 300px;
+      font-family: 'Consolas', monospace;
       color: #0f0;
-      font-family: 'Consolas', 'Monaco', monospace;
-      font-size: 14px;
       resize: vertical;
     }
-
-    .form-group textarea:focus,
-    .form-group input:focus {
-      outline: none;
-      border-color: #00d9ff;
-    }
-
+    input:focus, textarea:focus { outline: none; border-color: #00d9ff; }
     .btn {
       padding: 12px 30px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-
-    .btn-primary {
       background: linear-gradient(135deg, #00d9ff, #0066ff);
       color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
     }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 20px rgba(0, 217, 255, 0.4);
-    }
-
-    .btn-primary:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
-
+    .btn:hover { opacity: 0.9; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .result {
       margin-top: 25px;
       padding: 20px;
       background: #1a1a2e;
       border-radius: 10px;
-      border: 1px solid #00d9ff;
+      border: 1px solid #0f0;
       display: none;
     }
-
-    .result.show {
-      display: block;
-    }
-
-    .result h3 {
-      color: #0f0;
-      margin-bottom: 15px;
-    }
-
-    .url-box {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .url-box input {
+    .result.show { display: block; }
+    .result h3 { color: #0f0; margin-bottom: 15px; }
+    .url-row { display: flex; gap: 10px; margin-bottom: 10px; }
+    .url-row input {
       flex: 1;
-      padding: 10px;
-      background: #0f0f23;
-      border: 1px solid #333;
-      border-radius: 5px;
+      margin-bottom: 0;
       color: #00d9ff;
       font-family: monospace;
     }
-
     .btn-copy {
-      padding: 10px 20px;
+      padding: 12px 20px;
       background: #333;
       color: #fff;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
       cursor: pointer;
     }
-
-    .btn-copy:hover {
-      background: #444;
-    }
-
-    .roblox-usage {
-      margin-top: 20px;
+    .btn-copy:hover { background: #444; }
+    .loadstring-box {
+      margin-top: 15px;
       padding: 15px;
-      background: #0a0a15;
+      background: #000;
       border-radius: 8px;
       border-left: 3px solid #0f0;
     }
-
-    .roblox-usage h4 {
+    .loadstring-box code {
       color: #0f0;
-      margin-bottom: 10px;
-    }
-
-    .roblox-usage code {
-      display: block;
-      background: #000;
-      padding: 10px;
-      border-radius: 5px;
-      color: #0f0;
+      font-family: 'Consolas', monospace;
       font-size: 13px;
-      overflow-x: auto;
-    }
-
-    .error {
-      background: #2a0a0a;
-      border-color: #ff4444;
-      color: #ff4444;
+      word-break: break-all;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <header>
-      <h1>🎮 Roblox Paste</h1>
-      <p>Upload script Lua untuk digunakan dengan loadstring()</p>
-    </header>
+    <h1>🎮 Roblox Paste</h1>
+    <p class="subtitle">Upload script Lua untuk loadstring()</p>
 
-    <div class="paste-form">
-      <div class="form-group">
-        <label for="title">📝 Judul (opsional)</label>
-        <input type="text" id="title" placeholder="Contoh: Auto Farm Script">
-      </div>
+    <div class="form-box">
+      <label>📝 Judul (opsional)</label>
+      <input type="text" id="title" placeholder="Contoh: Auto Farm Script">
 
-      <div class="form-group">
-        <label for="content">💻 Script Lua</label>
-        <textarea id="content" placeholder="-- Paste script Lua kamu di sini...
+      <label>💻 Script Lua</label>
+      <textarea id="content" placeholder="-- Paste script kamu di sini...
 
-print('Hello dari Roblox Paste!')"></textarea>
-      </div>
+print('Hello World!')"></textarea>
 
-      <button class="btn btn-primary" id="submitBtn" onclick="createPaste()">
-        🚀 Buat Paste
-      </button>
+      <button class="btn" id="submitBtn" onclick="createPaste()">🚀 Buat Paste</button>
 
       <div class="result" id="result">
-        <h3>✅ Paste Berhasil Dibuat!</h3>
-        
+        <h3>✅ Berhasil!</h3>
+
         <label>🔗 View URL:</label>
-        <div class="url-box">
+        <div class="url-row">
           <input type="text" id="viewUrl" readonly>
-          <button class="btn-copy" onclick="copyUrl('viewUrl')">Copy</button>
+          <button class="btn-copy" onclick="copyText('viewUrl')">Copy</button>
         </div>
 
-        <label>📄 Raw URL (untuk Roblox):</label>
-        <div class="url-box">
+        <label>📄 Raw URL:</label>
+        <div class="url-row">
           <input type="text" id="rawUrl" readonly>
-          <button class="btn-copy" onclick="copyUrl('rawUrl')">Copy</button>
+          <button class="btn-copy" onclick="copyText('rawUrl')">Copy</button>
         </div>
 
-        <div class="roblox-usage">
-          <h4>📋 Cara Pakai di Roblox Executor:</h4>
-          <code id="loadstringCode">loadstring(game:HttpGet("URL"))() </code>
+        <div class="loadstring-box">
+          <label>📋 Pakai di Roblox:</label>
+          <code id="loadstringCode"></code>
         </div>
       </div>
     </div>
@@ -252,48 +147,37 @@ print('Hello dari Roblox Paste!')"></textarea>
       btn.textContent = '⏳ Menyimpan...';
 
       try {
-        const response = await fetch('/api/paste', {
+        const res = await fetch('/api/paste', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ title, content })
         });
 
-        const data = await response.json();
+        const data = await res.json();
 
         if (data.success) {
-          const baseUrl = window.location.origin;
-          const viewUrl = baseUrl + data.data.url;
-          const rawUrl = baseUrl + data.data.rawUrl;
-
-          document.getElementById('viewUrl').value = viewUrl;
-          document.getElementById('rawUrl').value = rawUrl;
+          const base = window.location.origin;
+          document.getElementById('viewUrl').value = base + data.data.url;
+          document.getElementById('rawUrl').value = base + data.data.rawUrl;
           document.getElementById('loadstringCode').textContent = 
-            `loadstring(game:HttpGet("${rawUrl}"))()`;
-
+            'loadstring(game:HttpGet("' + base + data.data.rawUrl + '"))()';
           result.classList.add('show');
-          result.classList.remove('error');
         } else {
-          throw new Error(data.error);
+          alert('Error: ' + data.error);
         }
-
-      } catch (error) {
-        alert('Error: ' + error.message);
-      } finally {
-        btn.disabled = false;
-        btn.textContent = '🚀 Buat Paste';
+      } catch (err) {
+        alert('Error: ' + err.message);
       }
+
+      btn.disabled = false;
+      btn.textContent = '🚀 Buat Paste';
     }
 
-    function copyUrl(inputId) {
-      const input = document.getElementById(inputId);
+    function copyText(id) {
+      const input = document.getElementById(id);
       input.select();
       document.execCommand('copy');
-      
-      const btn = input.nextElementSibling;
-      btn.textContent = '✓ Copied!';
-      setTimeout(() => btn.textContent = 'Copy', 2000);
+      alert('Copied!');
     }
   </script>
 </body>
