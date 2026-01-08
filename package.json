@@ -1,35 +1,7 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/paste",
-      "dest": "/api/paste.js"
-    },
-    {
-      "src": "/api/raw/([^/]+)",
-      "dest": "/api/raw/[id].js?id=$1"
-    },
-    {
-      "src": "/api/([^/]+)",
-      "dest": "/api/[id].js?id=$1"
-    },
-    {
-      "src": "/raw/([^/]+)",
-      "dest": "/api/raw/[id].js?id=$1"
-    },
-    {
-      "src": "/view/([^/]+)",
-      "dest": "/public/view.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/public/$1"
-    }
-  ]
+  "name": "roblox-paste",
+  "version": "1.0.0",
+  "dependencies": {
+    "mongodb": "^6.3.0"
+  }
 }
